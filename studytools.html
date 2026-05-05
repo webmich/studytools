@@ -432,6 +432,29 @@
   <button class="tab-btn" onclick="switchTab('stats')">📊 Übersicht</button>
 </div>
 
+<!-- SETUP BANNER -->
+<div id="setup-banner" style="display:none;background:#fff3cd;border-bottom:1px solid #ffc107;padding:14px 16px;font-size:12px;line-height:1.6;color:#333;">
+  <strong>⚙️ Einmalige Einrichtung erforderlich</strong><br>
+  Um Google Drive Sync zu nutzen, musst du einmalig eine kostenlose Google Cloud OAuth-Client-ID erstellen und in den Code eintragen.<br>
+  <strong>Schritte:</strong> 1) Gehe zu <a href="https://console.cloud.google.com" target="_blank" style="color:#1d4ed8;">console.cloud.google.com</a> → APIs & Services → Anmeldedaten → OAuth-Client-ID erstellen → Typ: Webanwendung → Autorisierte JS-Ursprünge: die URL dieser HTML-Datei → Client-ID kopieren. 2) Öffne diese HTML-Datei in einem Texteditor, suche nach <code>const CLIENT_ID = ''</code> und füge deine ID ein. 3) Datei neu laden.
+</div>
+
+<!-- SYNC BAR -->
+<div id="sync-bar" style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--cream-dark);border-bottom:1px solid var(--cream-dark);transition:background 0.3s;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div id="sync-dot" style="width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div>
+    <span id="sync-status" style="font-size:11px;color:var(--muted);font-weight:500;">Nicht verbunden</span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button id="btn-signin" onclick="signIn()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;background:var(--navy);color:white;border:none;border-radius:6px;cursor:pointer;">
+      Mit Google anmelden
+    </button>
+    <button id="btn-signout" onclick="signOut()" style="display:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;background:none;color:var(--muted);border:1.5px solid var(--cream-dark);border-radius:6px;cursor:pointer;">
+      Abmelden
+    </button>
+  </div>
+</div>
+
 <main>
 
   <!-- ===== GLOSSAR ===== -->
@@ -610,6 +633,195 @@
 </main>
 
 <script>
+  // ===================== GOOGLE DRIVE SYNC =====================
+  // Uses Google Identity Services + Drive REST API v3
+  // Data is stored in a single file: hrm_studytools_data.json in Drive root
+
+  const CLIENT_ID = '432953899385-tt61ap9b2rsrqr43n0d648g6lg4fukob.apps.googleusercontent.com'; // ← USER MUST FILL IN (see setup instructions)
+  const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+  const FILE_NAME = 'hrm_studytools_data.json';
+
+  let tokenClient;
+  let accessToken = null;
+  let tokenExpiry = null;
+  let driveFileId = null;
+  let syncStatus = 'idle';
+
+  function saveTokenToStorage(token, expiresIn) {
+    const expiry = Date.now() + (expiresIn || 3500) * 1000;
+    localStorage.setItem('hrm_access_token', token);
+    localStorage.setItem('hrm_token_expiry', expiry.toString());
+  }
+
+  function loadTokenFromStorage() {
+    const token = localStorage.getItem('hrm_access_token');
+    const expiry = parseInt(localStorage.getItem('hrm_token_expiry') || '0');
+    if (token && expiry > Date.now() + 60000) return { token, expiry };
+    return null;
+  }
+
+  function clearTokenFromStorage() {
+    localStorage.removeItem('hrm_access_token');
+    localStorage.removeItem('hrm_token_expiry');
+  }
+
+  function setSyncStatus(status, msg) {
+    syncStatus = status;
+    const el = document.getElementById('sync-status');
+    const dot = document.getElementById('sync-dot');
+    if (!el) return;
+    const labels = { idle: '–', syncing: 'Wird synchronisiert…', error: 'Fehler', ok: 'Gespeichert ✓' };
+    const colors = { idle: '#6b7280', syncing: '#c9a84c', error: '#c0392b', ok: '#2d6a4f' };
+    el.textContent = msg || labels[status];
+    dot.style.background = colors[status];
+  }
+
+  function loadGoogleApi() {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function initGoogleAuth() {
+    await loadGoogleApi();
+    if (!CLIENT_ID) {
+      setSyncStatus('error', 'Client ID fehlt – siehe Anleitung');
+      showSetupBanner();
+      return;
+    }
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: async (resp) => {
+        if (resp.error) { setSyncStatus('error', 'Auth-Fehler'); return; }
+        accessToken = resp.access_token;
+        saveTokenToStorage(resp.access_token, resp.expires_in);
+        document.getElementById('btn-signin').style.display = 'none';
+        document.getElementById('btn-signout').style.display = 'inline-block';
+        document.getElementById('sync-bar').style.background = 'rgba(45,106,79,0.15)';
+        setSyncStatus('syncing', 'Lade Daten…');
+        await loadFromDrive();
+      },
+    });
+
+    // Auto-signin with cached token
+    const cached = loadTokenFromStorage();
+    if (cached) {
+      accessToken = cached.token;
+      document.getElementById('btn-signin').style.display = 'none';
+      document.getElementById('btn-signout').style.display = 'inline-block';
+      document.getElementById('sync-bar').style.background = 'rgba(45,106,79,0.15)';
+      setSyncStatus('syncing', 'Verbinde…');
+      await loadFromDrive();
+    } else {
+      setSyncStatus('idle', 'Bitte anmelden');
+    }
+  }
+
+  function signIn() { tokenClient.requestAccessToken({ prompt: '' }); }
+
+  function signOut() {
+    google.accounts.oauth2.revoke(accessToken, () => {});
+    accessToken = null;
+    driveFileId = null;
+    clearTokenFromStorage();
+    document.getElementById('btn-signin').style.display = 'inline-block';
+    document.getElementById('btn-signout').style.display = 'none';
+    document.getElementById('sync-bar').style.background = '';
+    setSyncStatus('idle', 'Nicht verbunden');
+  }
+
+  async function driveRequest(url, method, body) {
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return res.json();
+  }
+
+  async function findOrCreateFile() {
+    // Search in appDataFolder
+    const searchRes = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}' and trashed=false&spaces=drive&fields=files(id,name)`,
+      { headers: { 'Authorization': 'Bearer ' + accessToken } }
+    );
+    const searchData = await searchRes.json();
+    if (searchData.files && searchData.files.length > 0) {
+      return searchData.files[0].id;
+    }
+    // Create new file
+    const meta = { name: FILE_NAME, mimeType: 'application/json' };
+    const createRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify(meta),
+    });
+    const createData = await createRes.json();
+    return createData.id;
+  }
+
+  async function loadFromDrive() {
+    try {
+      driveFileId = await findOrCreateFile();
+      const res = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,
+        { headers: { 'Authorization': 'Bearer ' + accessToken } }
+      );
+      if (res.status === 200) {
+        const text = await res.text();
+        if (text && text.trim().startsWith('{')) {
+          const data = JSON.parse(text);
+          glossar = data.glossar || [];
+          cards = data.cards || [];
+        }
+      }
+      setSyncStatus('ok', 'Verbunden & geladen ✓');
+      renderGlossar(); renderCards(); renderStats();
+    } catch(e) {
+      setSyncStatus('error', 'Ladefehler');
+    }
+  }
+
+  async function saveToDrive() {
+    if (!accessToken || !driveFileId) {
+      // Fallback to localStorage if not connected
+      localStorage.setItem('hrm_glossar', JSON.stringify(glossar));
+      localStorage.setItem('hrm_cards', JSON.stringify(cards));
+      return;
+    }
+    setSyncStatus('syncing', 'Speichern…');
+    try {
+      const payload = JSON.stringify({ glossar, cards, lastSaved: new Date().toISOString() });
+      const blob = new Blob([payload], { type: 'application/json' });
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify({ name: FILE_NAME })], { type: 'application/json' }));
+      form.append('file', blob);
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        body: form,
+      });
+      setSyncStatus('ok', 'Gespeichert in Drive ✓');
+      // Also keep localStorage as backup
+      localStorage.setItem('hrm_glossar', JSON.stringify(glossar));
+      localStorage.setItem('hrm_cards', JSON.stringify(cards));
+    } catch(e) {
+      setSyncStatus('error', 'Speicherfehler');
+    }
+  }
+
+  function showSetupBanner() {
+    document.getElementById('setup-banner').style.display = 'block';
+  }
+
+  // ===================== DATA =====================
   let glossar = JSON.parse(localStorage.getItem('hrm_glossar') || '[]');
   let cards = JSON.parse(localStorage.getItem('hrm_cards') || '[]');
 
@@ -625,8 +837,7 @@
   ];
 
   function save() {
-    localStorage.setItem('hrm_glossar', JSON.stringify(glossar));
-    localStorage.setItem('hrm_cards', JSON.stringify(cards));
+    saveToDrive();
   }
 
   function switchTab(tab) {
@@ -802,6 +1013,8 @@
   renderGlossar();
   renderCards();
   renderStats();
+  initGoogleAuth();
 </script>
 </body>
 </html>
+
