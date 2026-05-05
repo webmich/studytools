@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR & OrgPsych – Study Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2340;
+    --navy-mid: #243156;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f5f0e8;
+    --cream-dark: #ede7d9;
+    --text: #1a2340;
+    --muted: #6b7280;
+    --white: #ffffff;
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --red-light: #ffe5e5;
+    --red: #c0392b;
+    --tag-blue: #dbeafe;
+    --tag-blue-text: #1d4ed8;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(26,35,64,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,35,64,0.16);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 28px 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 2px solid rgba(201,168,76,0.18);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -30px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(201,168,76,0.10);
+  }
+  .header-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--navy-mid);
+    padding: 0 16px;
+    gap: 4px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 13px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold);
+  }
+
+  /* MAIN */
+  main { padding: 20px 16px 80px; max-width: 600px; margin: 0 auto; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* SECTION TITLE */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    margin-top: 4px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+  }
+  .count-badge {
+    background: var(--navy);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ADD FORM */
+  .add-form {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--cream-dark);
+  }
+  .add-form h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 8px;
+    background: var(--cream);
+    color: var(--text);
+    transition: border 0.2s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--navy);
+    background: var(--white);
+  }
+  textarea { height: 72px; }
+
+  .btn-add {
+    width: 100%;
+    padding: 11px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+  }
+  .btn-add:hover { background: var(--navy-mid); }
+  .btn-add:active { transform: scale(0.98); }
+
+  /* SEARCH */
+  .search-bar {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .search-bar input {
+    padding-left: 36px;
+    background: var(--white);
+    border: 1.5px solid var(--cream-dark);
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* GLOSSARY ENTRIES */
+  .entry-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--cream-dark);
+    animation: fadeIn 0.25s ease;
+    position: relative;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+  .entry-en {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .entry-de {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+  }
+  .entry-def {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .entry-topic {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: var(--tag-blue);
+    color: var(--tag-blue-text);
+    margin-top: 10px;
+  }
+  .entry-delete {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: none;
+    border: none;
+    color: var(--cream-dark);
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .entry-delete:hover { color: var(--red); }
+
+  /* STUDY CARDS */
+  .card-item {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--cream-dark);
+    animation: fadeIn 0.25s ease;
+    position: relative;
+  }
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--navy);
+    margin-bottom: 4px;
+    padding-right: 24px;
+  }
+  .card-authors {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .card-field {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .card-field-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .card-field-value {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .card-field.full { grid-column: 1 / -1; }
+  .card-field.result .card-field-label { color: var(--green); }
+  .card-field.result { background: var(--green-light); }
+  .card-delete {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--cream-dark);
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .card-delete:hover { color: var(--red); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* FILTER PILLS */
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .filter-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--cream-dark);
+    background: var(--white);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-pill.active {
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .stat-box {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid var(--cream-dark);
+  }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  label { font-size: 11px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+
+  .collapsible-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin-bottom: 12px;
+  }
+  .collapsible-btn::after { content: attr(data-icon); font-size: 16px; }
+  .collapsible-content { display: block; }
+  .collapsible-content.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">MSc HR Management & Organisationspsychologie</div>
+  <h1>Study Tools</h1>
+  <p>Glossar &amp; Study Cards · Vorbereitung WS 2026</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('glossar')">📖 Glossar</button>
+  <button class="tab-btn" onclick="switchTab('cards')">🗂 Study Cards</button>
+  <button class="tab-btn" onclick="switchTab('stats')">📊 Übersicht</button>
+</div>
+
+<!-- SETUP BANNER -->
+<div id="setup-banner" style="display:none;background:#fff3cd;border-bottom:1px solid #ffc107;padding:14px 16px;font-size:12px;line-height:1.6;color:#333;">
+  <strong>⚙️ Einmalige Einrichtung erforderlich</strong><br>
+  Um Google Drive Sync zu nutzen, musst du einmalig eine kostenlose Google Cloud OAuth-Client-ID erstellen und in den Code eintragen.<br>
+  <strong>Schritte:</strong> 1) Gehe zu <a href="https://console.cloud.google.com" target="_blank" style="color:#1d4ed8;">console.cloud.google.com</a> → APIs & Services → Anmeldedaten → OAuth-Client-ID erstellen → Typ: Webanwendung → Autorisierte JS-Ursprünge: die URL dieser HTML-Datei → Client-ID kopieren. 2) Öffne diese HTML-Datei in einem Texteditor, suche nach <code>const CLIENT_ID = ''</code> und füge deine ID ein. 3) Datei neu laden.
+</div>
+
+<!-- SYNC BAR -->
+<div id="sync-bar" style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--cream-dark);border-bottom:1px solid var(--cream-dark);transition:background 0.3s;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div id="sync-dot" style="width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div>
+    <span id="sync-status" style="font-size:11px;color:var(--muted);font-weight:500;">Nicht verbunden</span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button id="btn-signin" onclick="signIn()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;background:var(--navy);color:white;border:none;border-radius:6px;cursor:pointer;">
+      Mit Google anmelden
+    </button>
+    <button id="btn-signout" onclick="signOut()" style="display:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;background:none;color:var(--muted);border:1.5px solid var(--cream-dark);border-radius:6px;cursor:pointer;">
+      Abmelden
+    </button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ===== GLOSSAR ===== -->
+  <div class="section active" id="tab-glossar">
+
+    <div class="add-form">
+      <button class="collapsible-btn" data-icon="▾" onclick="toggleCollapse(this)">Neuen Begriff hinzufügen</button>
+      <div class="collapsible-content">
+        <div class="form-row">
+          <div>
+            <label>ENGLISCHER BEGRIFF</label>
+            <input type="text" id="g-en" placeholder="z.B. Organizational socialization">
+          </div>
+          <div>
+            <label>DEUTSCH</label>
+            <input type="text" id="g-de" placeholder="z.B. Organisationale Sozialisation">
+          </div>
+        </div>
+        <div class="form-row single">
+          <div>
+            <label>DEFINITION / ERKLÄRUNG</label>
+            <textarea id="g-def" placeholder="Kurze Definition auf Deutsch..."></textarea>
+          </div>
+        </div>
+        <div class="form-row single" style="margin-bottom:12px;">
+          <div>
+            <label>THEMENBEREICH</label>
+            <select id="g-topic">
+              <option value="Grundlagen">Grundlagen</option>
+              <option value="Persönlichkeit">Persönlichkeit & Diagnostik</option>
+              <option value="Lernen & PE">Lernen & Personalentwicklung</option>
+              <option value="Motivation">Motivation & Mindset</option>
+              <option value="Personalauswahl">Personalauswahl & Onboarding</option>
+              <option value="Recruiting">Recruiting</option>
+              <option value="Eignungsdiagnostik">Eignungsdiagnostik</option>
+              <option value="HR Fundamentals">HR Fundamentals & Trends</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addGlossarEntry()">+ Begriff speichern</button>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="g-search" placeholder="Begriff suchen..." oninput="renderGlossar()">
+    </div>
+
+    <div class="filter-row" id="g-filters"></div>
+
+    <div class="section-header">
+      <span class="section-title">Begriffe</span>
+      <span class="count-badge" id="g-count">0</span>
+    </div>
+
+    <div id="glossar-list"></div>
+  </div>
+
+  <!-- ===== STUDY CARDS ===== -->
+  <div class="section" id="tab-cards">
+
+    <div class="add-form">
+      <button class="collapsible-btn" data-icon="▾" onclick="toggleCollapse(this)">Neue Study Card anlegen</button>
+      <div class="collapsible-content">
+        <div class="form-row">
+          <div>
+            <label>TITEL DER STUDIE (EN)</label>
+            <input type="text" id="c-title" placeholder="z.B. Onboarding: a key to retention...">
+          </div>
+          <div>
+            <label>AUTOREN & JAHR</label>
+            <input type="text" id="c-authors" placeholder="z.B. Frögéli et al., 2023">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>METHODE</label>
+            <select id="c-method">
+              <option value="">– wählen –</option>
+              <option>Systematic Review</option>
+              <option>Meta-Analyse</option>
+              <option>Längsschnittstudie</option>
+              <option>Querschnittstudie</option>
+              <option>Experiment</option>
+              <option>Befragung / Survey</option>
+              <option>Bibliometrische Analyse</option>
+              <option>Sonstiges</option>
+            </select>
+          </div>
+          <div>
+            <label>THEMENBEREICH</label>
+            <select id="c-topic">
+              <option value="Grundlagen">Grundlagen</option>
+              <option value="Persönlichkeit">Persönlichkeit & Diagnostik</option>
+              <option value="Lernen & PE">Lernen & Personalentwicklung</option>
+              <option value="Motivation">Motivation & Mindset</option>
+              <option value="Personalauswahl">Personalauswahl & Onboarding</option>
+              <option value="Recruiting">Recruiting</option>
+              <option value="Eignungsdiagnostik">Eignungsdiagnostik</option>
+              <option value="HR Fundamentals">HR Fundamentals & Trends</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div>
+            <label>FRAGESTELLUNG / WAS WURDE UNTERSUCHT?</label>
+            <textarea id="c-question" placeholder="Worum geht es in der Studie?"></textarea>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div>
+            <label>KERNERGEBNIS</label>
+            <textarea id="c-result" placeholder="Was sind die wichtigsten Befunde?"></textarea>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div>
+            <label>RELEVANZ FÜR DIE PRAXIS</label>
+            <textarea id="c-relevance" placeholder="Was bedeutet das für HR / die Praxis?"></textarea>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addStudyCard()">+ Study Card speichern</button>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="c-search" placeholder="Studie suchen..." oninput="renderCards()">
+    </div>
+
+    <div class="filter-row" id="c-filters"></div>
+
+    <div class="section-header">
+      <span class="section-title">Study Cards</span>
+      <span class="count-badge" id="c-count">0</span>
+    </div>
+
+    <div id="cards-list"></div>
+  </div>
+
+  <!-- ===== STATS ===== -->
+  <div class="section" id="tab-stats">
+    <div class="section-header" style="margin-top:4px;">
+      <span class="section-title">Dein Fortschritt</span>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-box">
+        <div class="stat-num" id="s-glossar">0</div>
+        <div class="stat-label">Begriffe</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="s-cards">0</div>
+        <div class="stat-label">Study Cards</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="s-topics">0</div>
+        <div class="stat-label">Themen</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white);border-radius:var(--radius);padding:18px;border:1px solid var(--cream-dark);box-shadow:var(--shadow);">
+      <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);margin-bottom:14px;">Abdeckung nach Thema</div>
+      <div id="topic-bars"></div>
+    </div>
+
+    <div style="background:var(--navy);border-radius:var(--radius);padding:18px;margin-top:14px;color:var(--white);">
+      <div style="font-family:'DM Serif Display',serif;font-size:17px;margin-bottom:6px;">💡 Vorgeschlagene Studien</div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6;">Füge diese Studien aus unserem Chat als erste Study Cards hinzu:</p>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;" id="suggested-studies"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ===================== GOOGLE DRIVE SYNC =====================
+  // Uses Google Identity Services + Drive REST API v3
+  // Data is stored in a single file: hrm_studytools_data.json in Drive root
+
+  const CLIENT_ID = ''; // ← USER MUST FILL IN (see setup instructions)
+  const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+  const FILE_NAME = 'hrm_studytools_data.json';
+
+  let tokenClient;
+  let accessToken = null;
+  let driveFileId = null;
+  let syncStatus = 'idle'; // idle | syncing | error | ok
+
+  function setSyncStatus(status, msg) {
+    syncStatus = status;
+    const el = document.getElementById('sync-status');
+    const dot = document.getElementById('sync-dot');
+    if (!el) return;
+    const labels = { idle: '–', syncing: 'Wird synchronisiert…', error: 'Fehler', ok: 'Gespeichert ✓' };
+    const colors = { idle: '#6b7280', syncing: '#c9a84c', error: '#c0392b', ok: '#2d6a4f' };
+    el.textContent = msg || labels[status];
+    dot.style.background = colors[status];
+  }
+
+  function loadGoogleApi() {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function initGoogleAuth() {
+    await loadGoogleApi();
+    if (!CLIENT_ID) {
+      setSyncStatus('error', 'Client ID fehlt – siehe Anleitung');
+      showSetupBanner();
+      return;
+    }
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: async (resp) => {
+        if (resp.error) { setSyncStatus('error', 'Auth-Fehler'); return; }
+        accessToken = resp.access_token;
+        document.getElementById('btn-signin').style.display = 'none';
+        document.getElementById('btn-signout').style.display = 'inline-block';
+        document.getElementById('sync-bar').style.background = 'rgba(45,106,79,0.15)';
+        setSyncStatus('syncing', 'Lade Daten…');
+        await loadFromDrive();
+      },
+    });
+  }
+
+  function signIn() { tokenClient.requestAccessToken({ prompt: 'consent' }); }
+
+  function signOut() {
+    google.accounts.oauth2.revoke(accessToken, () => {});
+    accessToken = null;
+    driveFileId = null;
+    document.getElementById('btn-signin').style.display = 'inline-block';
+    document.getElementById('btn-signout').style.display = 'none';
+    document.getElementById('sync-bar').style.background = '';
+    setSyncStatus('idle', 'Nicht verbunden');
+  }
+
+  async function driveRequest(url, method, body) {
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return res.json();
+  }
+
+  async function findOrCreateFile() {
+    // Search in appDataFolder
+    const searchRes = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}' and trashed=false&spaces=drive&fields=files(id,name)`,
+      { headers: { 'Authorization': 'Bearer ' + accessToken } }
+    );
+    const searchData = await searchRes.json();
+    if (searchData.files && searchData.files.length > 0) {
+      return searchData.files[0].id;
+    }
+    // Create new file
+    const meta = { name: FILE_NAME, mimeType: 'application/json' };
+    const createRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify(meta),
+    });
+    const createData = await createRes.json();
+    return createData.id;
+  }
+
+  async function loadFromDrive() {
+    try {
+      driveFileId = await findOrCreateFile();
+      const res = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,
+        { headers: { 'Authorization': 'Bearer ' + accessToken } }
+      );
+      if (res.status === 200) {
+        const text = await res.text();
+        if (text && text.trim().startsWith('{')) {
+          const data = JSON.parse(text);
+          glossar = data.glossar || [];
+          cards = data.cards || [];
+        }
+      }
+      setSyncStatus('ok', 'Verbunden & geladen ✓');
+      renderGlossar(); renderCards(); renderStats();
+    } catch(e) {
+      setSyncStatus('error', 'Ladefehler');
+    }
+  }
+
+  async function saveToDrive() {
+    if (!accessToken || !driveFileId) {
+      // Fallback to localStorage if not connected
+      localStorage.setItem('hrm_glossar', JSON.stringify(glossar));
+      localStorage.setItem('hrm_cards', JSON.stringify(cards));
+      return;
+    }
+    setSyncStatus('syncing', 'Speichern…');
+    try {
+      const payload = JSON.stringify({ glossar, cards, lastSaved: new Date().toISOString() });
+      const blob = new Blob([payload], { type: 'application/json' });
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify({ name: FILE_NAME })], { type: 'application/json' }));
+      form.append('file', blob);
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        body: form,
+      });
+      setSyncStatus('ok', 'Gespeichert in Drive ✓');
+      // Also keep localStorage as backup
+      localStorage.setItem('hrm_glossar', JSON.stringify(glossar));
+      localStorage.setItem('hrm_cards', JSON.stringify(cards));
+    } catch(e) {
+      setSyncStatus('error', 'Speicherfehler');
+    }
+  }
+
+  function showSetupBanner() {
+    document.getElementById('setup-banner').style.display = 'block';
+  }
+
+  // ===================== DATA =====================
+  let glossar = JSON.parse(localStorage.getItem('hrm_glossar') || '[]');
+  let cards = JSON.parse(localStorage.getItem('hrm_cards') || '[]');
+
+  const TOPICS = ['Grundlagen','Persönlichkeit','Lernen & PE','Motivation','Personalauswahl','Recruiting','Eignungsdiagnostik','HR Fundamentals','Sonstiges'];
+
+  const SUGGESTED = [
+    { title: "Onboarding: a key to employee retention and workplace well-being", authors: "Mosquera et al., 2025", topic: "Personalauswahl" },
+    { title: "Effectiveness of formal onboarding: A systematic review", authors: "Frögéli et al., 2023", topic: "Personalauswahl" },
+    { title: "Personality is predictive of burnout but not of work engagement", authors: "Fukuzaki & Iwata, 2026", topic: "Persönlichkeit" },
+    { title: "Detecting causal relationships between work motivation and job performance", authors: "Meta-Analyse, 2024", topic: "Motivation" },
+    { title: "Revisiting the design of selection systems", authors: "Industrial & Org. Psychology", topic: "Eignungsdiagnostik" },
+    { title: "Validity of Social Media Assessments in Personnel Selection", authors: "Eur. J. Psychological Assessment, 2024", topic: "Recruiting" },
+  ];
+
+  function save() {
+    saveToDrive();
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'stats') renderStats();
+  }
+
+  function toggleCollapse(btn) {
+    const content = btn.nextElementSibling;
+    const isHidden = content.classList.toggle('hidden');
+    btn.dataset.icon = isHidden ? '▸' : '▾';
+  }
+
+  // ---- GLOSSAR ----
+  let activeGTopic = 'Alle';
+
+  function addGlossarEntry() {
+    const en = document.getElementById('g-en').value.trim();
+    const de = document.getElementById('g-de').value.trim();
+    const def = document.getElementById('g-def').value.trim();
+    const topic = document.getElementById('g-topic').value;
+    if (!en || !de) return alert('Bitte mind. englischen und deutschen Begriff angeben.');
+    glossar.unshift({ id: Date.now(), en, de, def, topic });
+    save();
+    document.getElementById('g-en').value = '';
+    document.getElementById('g-de').value = '';
+    document.getElementById('g-def').value = '';
+    renderGlossar();
+    renderStats();
+  }
+
+  function deleteGlossar(id) {
+    glossar = glossar.filter(e => e.id !== id);
+    save(); renderGlossar(); renderStats();
+  }
+
+  function renderGlossar() {
+    const search = document.getElementById('g-search').value.toLowerCase();
+    let filtered = glossar.filter(e =>
+      (activeGTopic === 'Alle' || e.topic === activeGTopic) &&
+      (e.en.toLowerCase().includes(search) || e.de.toLowerCase().includes(search) || e.def.toLowerCase().includes(search))
+    );
+
+    // filters
+    const topics = ['Alle', ...new Set(glossar.map(e => e.topic))];
+    const fRow = document.getElementById('g-filters');
+    fRow.innerHTML = topics.map(t =>
+      `<button class="filter-pill ${t === activeGTopic ? 'active' : ''}" onclick="setGFilter('${t}')">${t}</button>`
+    ).join('');
+
+    document.getElementById('g-count').textContent = filtered.length;
+    const list = document.getElementById('glossar-list');
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Noch keine Begriffe${glossar.length ? ' für dieses Thema' : ''}.<br>Leg deinen ersten Begriff an!</p></div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(e => `
+      <div class="entry-card">
+        <button class="entry-delete" onclick="deleteGlossar(${e.id})">✕</button>
+        <div class="entry-en">${e.en}</div>
+        <div class="entry-de">${e.de}</div>
+        ${e.def ? `<div class="entry-def">${e.def}</div>` : ''}
+        <span class="entry-topic">${e.topic}</span>
+      </div>
+    `).join('');
+  }
+
+  function setGFilter(t) { activeGTopic = t; renderGlossar(); }
+
+  // ---- STUDY CARDS ----
+  let activeCTopic = 'Alle';
+
+  function addStudyCard() {
+    const title = document.getElementById('c-title').value.trim();
+    const authors = document.getElementById('c-authors').value.trim();
+    const method = document.getElementById('c-method').value;
+    const topic = document.getElementById('c-topic').value;
+    const question = document.getElementById('c-question').value.trim();
+    const result = document.getElementById('c-result').value.trim();
+    const relevance = document.getElementById('c-relevance').value.trim();
+    if (!title) return alert('Bitte Titel der Studie angeben.');
+    cards.unshift({ id: Date.now(), title, authors, method, topic, question, result, relevance });
+    save();
+    ['c-title','c-authors','c-question','c-result','c-relevance'].forEach(id => document.getElementById(id).value = '');
+    renderCards();
+    renderStats();
+  }
+
+  function deleteCard(id) {
+    cards = cards.filter(c => c.id !== id);
+    save(); renderCards(); renderStats();
+  }
+
+  function renderCards() {
+    const search = document.getElementById('c-search').value.toLowerCase();
+    let filtered = cards.filter(c =>
+      (activeCTopic === 'Alle' || c.topic === activeCTopic) &&
+      (c.title.toLowerCase().includes(search) || c.authors.toLowerCase().includes(search) || c.result.toLowerCase().includes(search))
+    );
+
+    const topics = ['Alle', ...new Set(cards.map(c => c.topic))];
+    const fRow = document.getElementById('c-filters');
+    fRow.innerHTML = topics.map(t =>
+      `<button class="filter-pill ${t === activeCTopic ? 'active' : ''}" onclick="setCFilter('${t}')">${t}</button>`
+    ).join('');
+
+    document.getElementById('c-count').textContent = filtered.length;
+    const list = document.getElementById('cards-list');
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">🗂</div><p>Noch keine Study Cards${cards.length ? ' für dieses Thema' : ''}.<br>Füge deine erste Studie hinzu!</p></div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(c => `
+      <div class="card-item">
+        <button class="card-delete" onclick="deleteCard(${c.id})">✕</button>
+        <div class="card-title">${c.title}</div>
+        <div class="card-authors">${c.authors}${c.method ? ' · ' + c.method : ''}</div>
+        <div class="card-grid">
+          ${c.question ? `<div class="card-field full"><div class="card-field-label">FRAGESTELLUNG</div><div class="card-field-value">${c.question}</div></div>` : ''}
+          ${c.result ? `<div class="card-field result full"><div class="card-field-label">KERNERGEBNIS</div><div class="card-field-value">${c.result}</div></div>` : ''}
+          ${c.relevance ? `<div class="card-field full"><div class="card-field-label">PRAXISRELEVANZ</div><div class="card-field-value">${c.relevance}</div></div>` : ''}
+        </div>
+        <span class="entry-topic">${c.topic}</span>
+      </div>
+    `).join('');
+  }
+
+  function setCFilter(t) { activeCTopic = t; renderCards(); }
+
+  // ---- STATS ----
+  function renderStats() {
+    document.getElementById('s-glossar').textContent = glossar.length;
+    document.getElementById('s-cards').textContent = cards.length;
+    const allTopics = new Set([...glossar.map(e=>e.topic), ...cards.map(c=>c.topic)]);
+    document.getElementById('s-topics').textContent = allTopics.size;
+
+    const barsEl = document.getElementById('topic-bars');
+    const topicData = TOPICS.map(t => ({
+      topic: t,
+      g: glossar.filter(e => e.topic === t).length,
+      c: cards.filter(e => e.topic === t).length,
+    })).filter(d => d.g > 0 || d.c > 0);
+
+    if (!topicData.length) {
+      barsEl.innerHTML = `<p style="font-size:13px;color:var(--muted);">Noch keine Einträge vorhanden.</p>`;
+    } else {
+      const max = Math.max(...topicData.map(d => d.g + d.c), 1);
+      barsEl.innerHTML = topicData.map(d => `
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;">
+            <span style="font-weight:500;">${d.topic}</span>
+            <span style="color:var(--muted);">${d.g} Begriffe · ${d.c} Cards</span>
+          </div>
+          <div style="height:7px;background:var(--cream);border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${Math.round((d.g+d.c)/max*100)}%;background:linear-gradient(90deg,var(--navy),var(--gold));border-radius:4px;transition:width 0.5s;"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('suggested-studies').innerHTML = SUGGESTED.map(s => `
+      <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px;">
+        <div style="font-size:12px;font-weight:500;color:var(--white);line-height:1.4;">${s.title}</div>
+        <div style="font-size:11px;color:var(--gold);margin-top:3px;">${s.authors} · ${s.topic}</div>
+      </div>
+    `).join('');
+  }
+
+  // INIT
+  renderGlossar();
+  renderCards();
+  renderStats();
+  initGoogleAuth();
+</script>
+</body>
+</html>
